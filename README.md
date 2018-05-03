@@ -33,8 +33,8 @@ def hello(a: int, b: str, c: [list, type(None)] = []) -> [int, str]:
 
 Or check them during execution:
 ```python
-Type_checker[int, float](0)
-Type_checker.array(numpy.arange(10))
+TypeChecker[int, float](0)
+TypeChecker.array(numpy.arange(10))
 ```
 
 useful types:
@@ -64,8 +64,8 @@ def hello(a: (0, float('+inf'), (False, True)), b: (0, 1)) -> (0, 100):
 
 Or check them during execution:
 ```python
-Bound_checker[(0, 1), (2, 4)](0.5)
-Bound_checker.positif(100)
+BoundChecker[(0, 1), (2, 4)](0.5)
+BoundChecker.positif(100)
 ```
 
 the tuple defining the bounds are:  
@@ -80,10 +80,10 @@ You may use lists of bounds to define discontinuous bounds
 You may also combine the previous methods into the annotations:
 ```python
 @enforce_annotations
-def hello(a: [Bound_checker[(0, 1)], Type_checker[int, float]]):
+def hello(a: [BoundChecker[(0, 1)], TypeChecker[int, float]]):
     pass
 
 @enforce_annotations
-def hello(a: [Bound_checker[(0, 1)], Type_checker[int, float]]) -> [Bound_checker[(0, 1, (False, True))], Type_checker[float]]:
+def hello(a: [BoundChecker[(0, 1)], TypeChecker[int, float]]) -> [BoundChecker[(0, 1, (False, True))], TypeChecker[float]]:
     return 0.2
 ```

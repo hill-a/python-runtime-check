@@ -2,7 +2,7 @@ from collections import Iterable
 
 import numpy as np
 
-class _Type_checker_meta(type):
+class _TypeCheckerMeta(type):
     @classmethod
     def _validater(cls, key):
         def check(a):
@@ -16,10 +16,10 @@ class _Type_checker_meta(type):
     def __getitem__(cls, key):
         return cls._validater(key)
 
-class Type_checker(object, metaclass=_Type_checker_meta): 
+class TypeChecker(object, metaclass=_TypeCheckerMeta): 
     """
-    Type_checker[int](0)
-    Type_checker.array(numpy.arange(10))
+    TypeChecker[int](0)
+    TypeChecker.array(numpy.arange(10))
 
     you may use list of types to allow multiple types
     """

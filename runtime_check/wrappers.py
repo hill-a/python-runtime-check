@@ -2,17 +2,17 @@ from inspect import signature
 from collections import Iterable
 from functools import wraps
 
-from runtime_check.check_type import Type_checker
-from runtime_check.check_bounds import Bound_checker
+from runtime_check.check_type import TypeChecker
+from runtime_check.check_bounds import BoundChecker
 
 def enforce_annotations(func):
     """
     @enforce_annotations
-    def hello(a: [Bound_checker[(0,1)], Type_checker[[int,float]]]):
+    def hello(a: [BoundChecker[(0,1)], TypeChecker[[int,float]]]):
         pass
 
     @enforce_annotations
-    def hello(a: [Bound_checker[(0,1)], Type_checker[[int,float]]]) -> [Bound_checker[(0,1,(False, True))], Type_checker[float]]:
+    def hello(a: [BoundChecker[(0,1)], TypeChecker[[int,float]]]) -> [BoundChecker[(0,1,(False, True))], TypeChecker[float]]:
         return 0.2
     """
     sig = signature(func)
@@ -65,17 +65,17 @@ def check_bound_at_run(func):
         for name, val in bound.arguments.items():
             if name in ann:
                 if isinstance(ann[name], Iterable):
-                    valid = any([Bound_checker._in_bounds(val, key) for key in ann[name]])
+                    valid = any([BoundChecker._in_bounds(val, key) for key in ann[name]])
                 else:
-                    valid = Bound_checker._in_bounds(val, ann[name])
+                    valid = BoundChecker._in_bounds(val, ann[name])
                 assert valid, "Number out of bounds {}, expected bounds {}".format(val, ann[name])
 
         return_val = func(*args, **kwargs)
         if 'return' in ann:
             if isinstance(ann['return'], Iterable):
-                valid = any([Bound_checker._in_bounds(return_val, key) for key in ann['return']])
+                valid = any([BoundChecker._in_bounds(return_val, key) for key in ann['return']])
             else:
-                valid = Bound_checker(return_val, ann['return'])
+                valid = BoundChecker(return_val, ann['return'])
             assert valid, "Number out of bounds {}, expected bounds {}".format(return_val, ann['return'])
         return return_val
     return wrapper
