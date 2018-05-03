@@ -49,9 +49,9 @@ def check_bound_at_run(func):
     @check_bound_at_run
     def hello(a: (0, float('+inf'),(False, True)), b: (0, 1)) -> (0,100):
         if a < (b * 100):
-            b * 100
+            return b * 100
         else:
-            min(a, 100)
+            return min(a, 100)
 
     the tuple defining the bounds are (Lower_bound, Upper_bound, (Include_lower_bound, Include_upper_bound))
         or (Lower_bound, Upper_bound)
