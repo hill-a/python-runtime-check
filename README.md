@@ -9,7 +9,12 @@ inspired blackmagic from quite a fun talk
 
 ## What is it
 
-This is a python 3 only, type and bound checking code enforced at runtime.
+This is a python 3 only, type and bound checking code enforced at runtime.  
+
+Yes, I am aware of python's ducktyping. However some situations have arisen in the past, where I needed to garanty that my inputs where sanitized. For example, an list `a = []` that should contain only number, if `a.append('')` occure, it will lead to undesired side effects.
+Or even with `ParseArgument`, if you need a number between 0 and 1 for probabilistic usage.  
+
+Hence this library.  
 
 ### Installation
 
