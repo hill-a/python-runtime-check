@@ -11,7 +11,15 @@ inspired blackmagic from quite a fun talk
 
 This is a python 3 only, type and bound checking code enforced at runtime.
 
-## Type checking
+### Installation
+
+You can install this using:
+```bash
+pip install -e .
+```
+in the root directory of the repository.
+
+### Type checking
 
 You can enforce python annotated types at call:
 ```python
@@ -42,7 +50,7 @@ useful types:
 - `collections.Iterable`
 - `type(None)`
 
-## Bounds checking
+### Bounds checking
 
 You can also check annotated bounds at call:
 ```python
@@ -75,7 +83,7 @@ or:
 
 You may use lists of bounds to define discontinuous bounds
 
-## Chained checking
+### Chained checking
 
 You may also combine the previous methods into the annotations:
 ```python

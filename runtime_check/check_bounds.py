@@ -28,9 +28,9 @@ class _BoundCheckerMeta(type):
         def check(a):
             TypeChecker.scalar(a)
             if isinstance(key, list):
-                valid = any([_in_bounds(a, k) for k in key])
+                valid = any([mcs._in_bounds(a, k) for k in key])
             else:
-                valid = _in_bounds(a, key)
+                valid = mcs._in_bounds(a, key)
             assert valid, "Number out of bounds {}, expected bounds {}".format(a, key)
 
         return check

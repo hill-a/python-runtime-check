@@ -2,9 +2,10 @@ from collections import Iterable
 
 import numpy as np
 
+
 class _TypeCheckerMeta(type):
     @classmethod
-    def _validater(cls, key):
+    def _validater(mcs, key):
         def check(a):
             if isinstance(key, Iterable):
                 valid = any([isinstance(a, t) for t in key])
@@ -15,6 +16,7 @@ class _TypeCheckerMeta(type):
 
     def __getitem__(cls, key):
         return cls._validater(key)
+
 
 class TypeChecker(object, metaclass=_TypeCheckerMeta): 
     """
