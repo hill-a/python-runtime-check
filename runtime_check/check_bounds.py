@@ -1,13 +1,13 @@
-from collections import Iterable
 import operator
 
 import numpy as np
 
 from runtime_check.check_type import TypeChecker
 
+
 class _BoundCheckerMeta(type):
     @classmethod
-    def _in_bounds(a, key):
+    def _in_bounds(mcs, a, key):
         if len(key) == 2:
             TypeChecker.scalar(key[0])
             TypeChecker.scalar(key[1])
@@ -24,7 +24,7 @@ class _BoundCheckerMeta(type):
                           "Include_upper_bound)) or (Lower_bound, Upper_bound)"
 
     @classmethod
-    def _validater(cls, key):
+    def _validater(mcs, key):
         def check(a):
             TypeChecker.scalar(a)
             if isinstance(key, list):
@@ -32,37 +32,39 @@ class _BoundCheckerMeta(type):
             else:
                 valid = _in_bounds(a, key)
             assert valid, "Number out of bounds {}, expected bounds {}".format(a, key)
+
         return check
 
     def __getitem__(cls, key):
         return cls._validater(key)
 
 
-class BoundChecker(object, metaclass=_BoundCheckerMeta): 
+class BoundChecker(object, metaclass=_BoundCheckerMeta):
     """
     BoundChecker[(0,1)](0.5)
-    BoundChecker.positif(100)
+    BoundChecker.positive(100)
 
     the tuple defining the bounds are (Lower_bound, Upper_bound, (Include_lower_bound, Include_upper_bound))
         or (Lower_bound, Upper_bound)
     You may use lists of bounds to define discontinuous bounds
     """
-    @classmethod
-    def positif(self, a):
-        self._validater((0,np.inf))(a)
 
     @classmethod
-    def negatif(self, a):
-        self._validater((-np.inf,0))(a)
+    def positive(cls, a):
+        cls._validater((0, np.inf))(a)
 
     @classmethod
-    def positif_not_zero(self, a):
-        self._validater((0,np.inf,(False,True)))(a)
+    def negative(cls, a):
+        cls._validater((-np.inf, 0))(a)
 
     @classmethod
-    def negatif_not_zero(self, a):
-        self._validater((-np.inf,0,(True, False)))(a)
+    def positive_not_zero(cls, a):
+        cls._validater((0, np.inf, (False, True)))(a)
 
     @classmethod
-    def probability(self, a):
-        self._validater((0,1))(a)
+    def negative_not_zero(cls, a):
+        cls._validater((-np.inf, 0, (True, False)))(a)
+
+    @classmethod
+    def probability(cls, a):
+        cls._validater((0, 1))(a)

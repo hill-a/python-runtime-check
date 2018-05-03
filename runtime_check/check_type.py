@@ -24,13 +24,13 @@ class TypeChecker(object, metaclass=_TypeCheckerMeta):
     you may use list of types to allow multiple types
     """
     @classmethod
-    def scalar(self, a):
-        self._validater([int, float])(a)
+    def scalar(cls, a):
+        cls._validater([int, float])(a)
 
     @classmethod
-    def numpy_array(self, a):
-        self._validater(np.ndarray)(a)
+    def numpy_array(cls, a):
+        cls._validater(np.ndarray)(a)
 
     @classmethod
-    def array(self, a):
-        self._validater([np.ndarray, Iterable])(a)
+    def array(cls, a):
+        cls._validater([np.ndarray, Iterable])(a)

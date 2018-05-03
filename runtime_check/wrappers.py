@@ -2,8 +2,8 @@ from inspect import signature
 from collections import Iterable
 from functools import wraps
 
-from runtime_check.check_type import TypeChecker
 from runtime_check.check_bounds import BoundChecker
+
 
 def enforce_annotations(func):
     """
@@ -17,26 +17,29 @@ def enforce_annotations(func):
     """
     sig = signature(func)
     ann = func.__annotations__
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         bound = sig.bind(*args, **kwargs)
         for name, val in bound.arguments.items():
             if name in ann:
                 if isinstance(ann[name], Iterable):
-                    valid = all([t(val) for t in ann[name]])
+                    [t(val) for t in ann[name]]
                 else:
-                    valid = ann[name](val)
+                    ann[name](val)
 
         return_val = func(*args, **kwargs)
         if 'return' in ann:
             if isinstance(ann['return'], Iterable):
-                valid = all([t(return_val) for t in ann['return']])
+                [t(return_val) for t in ann['return']]
             else:
-                valid = ann['return'](return_val)
+                ann['return'](return_val)
         return return_val
+
     return wrapper
 
-def check_bound_at_run(func): 
+
+def check_bound_at_run(func):
     """
     @check_bound_at_run
     def hello(a: [(float('-inf'), -1), (0, 1),(2, float('+inf'))]):
@@ -59,6 +62,7 @@ def check_bound_at_run(func):
     """
     sig = signature(func)
     ann = func.__annotations__
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         bound = sig.bind(*args, **kwargs)
@@ -78,7 +82,9 @@ def check_bound_at_run(func):
                 valid = BoundChecker(return_val, ann['return'])
             assert valid, "Number out of bounds {}, expected bounds {}".format(return_val, ann['return'])
         return return_val
+
     return wrapper
+
 
 def check_type_at_run(func):
     """
@@ -101,6 +107,7 @@ def check_type_at_run(func):
     """
     sig = signature(func)
     ann = func.__annotations__
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         bound = sig.bind(*args, **kwargs)
@@ -120,4 +127,5 @@ def check_type_at_run(func):
                 valid = isinstance(return_val, ann['return'])
             assert valid, 'Expected {} for return, got {}'.format(ann['return'], return_val.__class__)
         return return_val
+
     return wrapper

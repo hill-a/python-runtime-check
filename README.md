@@ -2,14 +2,14 @@
 
 ## Disclosure
 
-inspired blackmagic from quite a fun talk  
+inspired blackmagic from quite a fun talk
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=Je8TcRQcUgA" target="_blank"><img src="http://img.youtube.com/vi/Je8TcRQcUgA/0.jpg" alt="The 'Fun' of Reinvention by David Beazley" width="240" height="180" border="10" /></a>
 
 
 ## What is it
 
-This is a python 3 only, type and bound checking code enforced at runtime. 
+This is a python 3 only, type and bound checking code enforced at runtime.
 
 ## Type checking
 
@@ -65,7 +65,7 @@ def hello(a: (0, float('+inf'), (False, True)), b: (0, 1)) -> (0, 100):
 Or check them during execution:
 ```python
 BoundChecker[(0, 1), (2, 4)](0.5)
-BoundChecker.positif(100)
+BoundChecker.positive(100)
 ```
 
 the tuple defining the bounds are:  
@@ -75,7 +75,7 @@ or:
 
 You may use lists of bounds to define discontinuous bounds
 
-## Chainned checking
+## Chained checking
 
 You may also combine the previous methods into the annotations:
 ```python
