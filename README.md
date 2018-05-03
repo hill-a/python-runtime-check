@@ -2,7 +2,9 @@
 
 ## Disclosure
 
-inspired blackmagic from quite a fun talk https://www.youtube.com/watch?v=Je8TcRQcUgA
+inspired blackmagic from quite a fun talk  
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=Je8TcRQcUgA" target="_blank"><img src="http://img.youtube.com/vi/Je8TcRQcUgA/0.jpg" alt="The 'Fun' of Reinvention by David Beazley" width="240" height="180" border="10" /></a>
+
 
 ## what is it
 
@@ -35,9 +37,9 @@ Type_checker.array(numpy.arange(10))
 ```
 
 useful types:
-- numpy.ndarray
-- collections.Iterable
-- type(None)
+- `numpy.ndarray`
+- `collections.Iterable`
+- `type(None)`
 
 ## Bounds checking
 
@@ -60,12 +62,15 @@ def hello(a: (0, float('+inf'),(False, True)), b: (0, 1)) -> (0,100):
 ```
 
 Or check them during execution:
-```
+```python
 Bound_checker[(0,1)](0.5)
 Bound_checker.positif(100)
 ```
 
-the tuple defining the bounds are ```(Lower_bound, Upper_bound, (Include_lower_bound, Include_upper_bound))``` or ```(Lower_bound, Upper_bound)```
+the tuple defining the bounds are:  
+`(Lower_bound, Upper_bound, (Include_lower_bound, Include_upper_bound))`  
+or:  
+`(Lower_bound, Upper_bound)`  
 You may use lists of bounds to define discontinuous bounds
 
 ## Chainned checking
