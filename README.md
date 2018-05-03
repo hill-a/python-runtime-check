@@ -54,9 +54,9 @@ def hello(a: (0, 1)):
 @check_bound_at_run
 def hello(a: (0, float('+inf'),(False, True)), b: (0, 1)) -> (0,100):
     if a < (b * 100):
-        b * 100
+        return b * 100
     else:
-        min(a, 100)
+        return min(a, 100)
 ```
 
 Or check them during execution:
@@ -71,7 +71,7 @@ You may use lists of bounds to define discontinuous bounds
 ## Chainned checking
 
 You may also combine the previous methods into the annotations:
-```
+```python
 @enforce_annotations
 def hello(a: [Bound_checker[(0,1)], Type_checker[[int,float]]]):
     pass
