@@ -3,16 +3,17 @@ from collections import Iterable
 from functools import wraps
 
 from runtime_check.check_bounds import BoundChecker
+from runtime_check.check_type import TypeChecker
 
 
 def enforce_annotations(func):
     """
     @enforce_annotations
-    def hello(a: [BoundChecker[(0,1)], TypeChecker[[int,float]]]):
+    def hello(a: [BoundChecker[(0,1)], TypeChecker[int,float]]):
         pass
 
     @enforce_annotations
-    def hello(a: [BoundChecker[(0,1)], TypeChecker[[int,float]]]) -> [BoundChecker[(0,1,(False, True))], TypeChecker[float]]:
+    def hello(a: [BoundChecker[(0,1)], TypeChecker[int,float]]) -> [BoundChecker[(0,1,(False, True))], TypeChecker[float]]:
         return 0.2
     """
     sig = signature(func)
@@ -89,7 +90,7 @@ def check_bound_at_run(func):
 def check_type_at_run(func):
     """
     @check_type_at_run
-    def hello(a: [int,float]):
+    def hello(a: Union[int, float]):
         pass
 
     @check_type_at_run
@@ -97,13 +98,14 @@ def check_type_at_run(func):
         pass
 
     @check_type_at_run
-    def hello(a: int, b: str, c: [list, type(None)] = []) -> [int, str]:
+    def hello(a: int, b: str, c: Optional[List[Any]] = []) -> Union[int, str]:
         if c is None:
             return b
         else: 
             return a
 
-    you may use list of types to allow multiple types
+    you may use typing.Union[int, float] for mutliple valid types
+    or List[int], Dict[str, int], Optional[int].
     """
     sig = signature(func)
     ann = func.__annotations__
@@ -113,19 +115,13 @@ def check_type_at_run(func):
         bound = sig.bind(*args, **kwargs)
         for name, val in bound.arguments.items():
             if name in ann:
-                if isinstance(ann[name], Iterable):
-                    valid = any([isinstance(val, t) for t in ann[name]])
-                else:
-                    valid = isinstance(val, ann[name])
-                assert valid, 'Expected {} for argument {}, got {}'.format(ann[name], name, val.__class__)
+                assert TypeChecker._check_type(ann[name], val), \
+                    'Expected {} for argument {}, got {}'.format(ann[name], name, val.__class__)
 
         return_val = func(*args, **kwargs)
         if 'return' in ann:
-            if isinstance(ann['return'], Iterable):
-                valid = any([isinstance(return_val, t) for t in ann['return']])
-            else:
-                valid = isinstance(return_val, ann['return'])
-            assert valid, 'Expected {} for return, got {}'.format(ann['return'], return_val.__class__)
+            assert TypeChecker._check_type(ann['return'], return_val), \
+                'Expected {} for return, got {}'.format(ann['return'], return_val.__class__)
         return return_val
 
     return wrapper

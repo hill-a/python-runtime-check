@@ -1,33 +1,95 @@
-from collections import Iterable
+from typing import List, Union, Dict, Tuple, Any, Set, TypeVar, Callable, Sequence, Mapping, Iterable, Iterator, Container
 
 import numpy as np
 
+DEEP = False
 
 class _TypeCheckerMeta(type):
     @classmethod
-    def _validater(mcs, key):
-        def check(a):
-            if isinstance(key, Iterable):
-                valid = any([isinstance(a, t) for t in key])
+    def _check_type(mcs, key, a): #TODO: add the remainding typing objects (generator, ...)
+        if type(key) == type(Union):
+            return any([mcs._check_type(k, a) for k in key.__args__])
+        elif isinstance(key, TypeVar):
+            return any([mcs._check_type(k, a) for k in key.__constraints__])
+        elif issubclass(key, List):
+            valid = isinstance(a, List)
+            if DEEP and valid:
+                return all([mcs._check_type(key.__args__[0], val) for val in a])
             else:
-                valid = isinstance(a, key)
-            assert valid, "Expected {}, got {}".format(key, a.__class__)
+                return valid
+        elif issubclass(key, Set):
+            valid = isinstance(a, Set)
+            if DEEP and valid:
+                return all([mcs._check_type(key.__args__[0], val) for val in a])
+            else:
+                return valid
+        elif issubclass(key, Sequence):
+            valid = isinstance(a, Sequence)
+            if DEEP and valid:
+                return all([mcs._check_type(key.__args__[0], val) for val in a])
+            else:
+                return valid
+        elif issubclass(key, Dict):
+            valid = isinstance(a, Dict)
+            if DEEP and valid:
+                return all([mcs._check_type(key.__args__[0], k) and 
+                            mcs._check_type(key.__args__[1], val) for (k, val) in a.items()])
+            else:
+                return valid
+        elif issubclass(key, Tuple):
+            valid = isinstance(a, Tuple)
+            if len(key.__args__) != len(a):
+                return False
+            elif DEEP and valid:
+                return all([mcs._check_type(k, val) for k, val in zip(key.__args__, a)])
+            else:
+                return valid
+        elif type(key) == type(Callable): # will not do in depth checking, only shallow.
+            return callable(a)
+        elif issubclass(key, Mapping): # will not do in depth checking, only shallow.
+            return isinstance(a, map)
+        elif issubclass(key, Iterable): # will not do in depth checking, only shallow.
+            return isinstance(a, Iterable)
+        elif issubclass(key, Iterator): # will not do in depth checking, only shallow.
+            return isinstance(a, Iterator)
+        elif issubclass(key, Container):
+            return isinstance(a, Container)
+        elif key == Any:
+            return True
+        elif key == type(None) or key == None:
+            return a is None
+        elif a is None:
+            return False
+        else:
+            try:
+                return isinstance(a, key)
+            except:
+                print("Error: occured when comparing {} to class {}".format(a, key))
+
+    @classmethod
+    def _validater(cls, key):
+        def check(a):
+            assert cls._check_type(key, a), "Expected {}, got {}".format(key, a.__class__)
         return check
 
     def __getitem__(cls, key):
-        return cls._validater(key)
+        if isinstance(key, (Tuple, List, Set)):
+            return cls._validater(Union[tuple(key)])
+        else:
+            return cls._validater(key)
 
 
 class TypeChecker(object, metaclass=_TypeCheckerMeta): 
     """
-    TypeChecker[int](0)
+    TypeChecker[int, float](0)
     TypeChecker.array(numpy.arange(10))
 
-    you may use list of types to allow multiple types
+    you may use typing.Union[int, float] for mutliple valid types
+    or List[int], Dict[str, int], Optional[int].
     """
     @classmethod
     def scalar(cls, a):
-        cls._validater([int, float])(a)
+        cls._validater(Union[int, float])(a)
 
     @classmethod
     def numpy_array(cls, a):
@@ -35,4 +97,4 @@ class TypeChecker(object, metaclass=_TypeCheckerMeta):
 
     @classmethod
     def array(cls, a):
-        cls._validater([np.ndarray, Iterable])(a)
+        cls._validater(Union[np.ndarray, Iterable])(a)
