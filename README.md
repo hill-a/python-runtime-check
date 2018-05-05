@@ -1,14 +1,16 @@
 # python-runtime-check
 
-## Disclosure
+## Information
+### Disclosure
 
 I did not directly come up with this. This 'blackmagic' is inspired from a talk by David Beazley. It's quite fun watch if you have an hour to spare :)  
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=Je8TcRQcUgA" target="_blank"><img src="http://img.youtube.com/vi/Je8TcRQcUgA/0.jpg" alt="The 'Fun' of Reinvention by David Beazley" width="240" height="180" border="10" /></a>  
+Video:  
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=Je8TcRQcUgA" target="_blank"><img src="http://img.youtube.com/vi/Je8TcRQcUgA/0.jpg" alt="The 'Fun' of Reinvention by David Beazley" width="480" height="360" border="10" /></a>  
 
 As such, all the code in this repository is Creative Commons 0 [(CC0)](https://creativecommons.org/share-your-work/public-domain/cc0/)  
 
-## What is it
+### What is this?
 
 This is a python 3 only library, used for type checking and bound checking, enforced at runtime.  
 
@@ -19,7 +21,37 @@ Also, I find it sad that the [annotations](https://www.python.org/dev/peps/pep-3
 
 Hence this library, where annotations can be enforced if present, types checked, or bounds of numbers checked.  
 
-### Installation
+### When should I use this?
+
+Preferably, in situations where you REALLY need to. This is not designed to run on every function (you can't neglect the overhead cost), as such here are some (rather poor) examples of when to use this:  
+<br/>
+```python
+def print_information(info):
+    print("here is the information:" + info)
+```
+Here, we would prefere `info` to be of type string.  
+<br/>  
+```python
+def print_informations(infos):
+    for info in infos:
+        print("here some of the information:" + info)
+```
+Here, we would prefere `infos` to be of type list of string.  
+<br/>  
+```python
+def dice_roll(proba):
+    roll = random.random()
+    if roll <= proba:
+        print("success!")
+        return True
+    else:
+        print("failure!")
+        return False
+```
+Here, we would prefere `proba` to be of type float, but also bound between [0, 1].  
+  
+
+## Installation
 
 You can install this using:
 ```bash
@@ -27,6 +59,7 @@ pip install -e .
 ```
 in the root directory of the repository.
 
+## Usage
 ### Type checking
 
 You can enforce the python type annotations at call:
