@@ -8,6 +8,7 @@ from runtime_check.check_type import TypeChecker
 class _BoundCheckerMeta(type):
     @classmethod
     def _in_bounds(mcs, a, key):
+        TypeChecker.scalar(a)
         if len(key) == 2:
             TypeChecker.scalar(key[0])
             TypeChecker.scalar(key[1])
@@ -18,7 +19,7 @@ class _BoundCheckerMeta(type):
             TypeChecker[bool](key[2][0])
             TypeChecker[bool](key[2][1])
             return (operator.le if key[2][0] else operator.lt)(key[0], a) and \
-                   (operator.le if key[2][1] else operator.lt)(key[1], a)
+                   (operator.le if key[2][1] else operator.lt)(a, key[1])
         else:
             assert False, "The bound tuple can be of structure: (Lower_bound, Upper_bound, (Include_lower_bound, " + \
                           "Include_upper_bound)) or (Lower_bound, Upper_bound)"
@@ -26,8 +27,7 @@ class _BoundCheckerMeta(type):
     @classmethod
     def _validater(mcs, key):
         def check(a):
-            TypeChecker.scalar(a)
-            if isinstance(key, list):
+            if isinstance(key, list) or isinstance(key, tuple) and all([isinstance(k, tuple) for k in key]):
                 valid = any([mcs._in_bounds(a, k) for k in key])
             else:
                 valid = mcs._in_bounds(a, key)

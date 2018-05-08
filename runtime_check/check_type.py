@@ -1,4 +1,4 @@
-from typing import List, Union, Dict, Tuple, Any, Set, TypeVar, Callable, Sequence, Mapping, Iterable, Iterator, Container
+from typing import List, Union, Dict, Tuple, Any, Set, TypeVar, Callable, Mapping, Iterator
 
 import numpy as np
 
@@ -7,7 +7,9 @@ DEEP = False
 class _TypeCheckerMeta(type):
     @classmethod
     def _check_type(mcs, key, a): #TODO: add the remainding typing objects (generator, ...)
-        if type(key) == type(Union):
+        if key == Any:
+            return True
+        elif type(key) == type(Union):
             return any([mcs._check_type(k, a) for k in key.__args__])
         elif isinstance(key, TypeVar):
             return any([mcs._check_type(k, a) for k in key.__constraints__])
@@ -23,12 +25,6 @@ class _TypeCheckerMeta(type):
                 return all([mcs._check_type(key.__args__[0], val) for val in a])
             else:
                 return valid
-        elif issubclass(key, Sequence):
-            valid = isinstance(a, Sequence)
-            if DEEP and valid:
-                return all([mcs._check_type(key.__args__[0], val) for val in a])
-            else:
-                return valid
         elif issubclass(key, Dict):
             valid = isinstance(a, Dict)
             if DEEP and valid:
@@ -37,10 +33,8 @@ class _TypeCheckerMeta(type):
             else:
                 return valid
         elif issubclass(key, Tuple):
-            valid = isinstance(a, Tuple)
-            if len(key.__args__) != len(a):
-                return False
-            elif DEEP and valid:
+            valid = isinstance(a, Tuple) and len(key.__args__) == len(a)
+            if DEEP and valid:
                 return all([mcs._check_type(k, val) for k, val in zip(key.__args__, a)])
             else:
                 return valid
@@ -48,14 +42,8 @@ class _TypeCheckerMeta(type):
             return callable(a)
         elif issubclass(key, Mapping): # will not do in depth checking, only shallow.
             return isinstance(a, map)
-        elif issubclass(key, Iterable): # will not do in depth checking, only shallow.
-            return isinstance(a, Iterable)
         elif issubclass(key, Iterator): # will not do in depth checking, only shallow.
             return isinstance(a, Iterator)
-        elif issubclass(key, Container):
-            return isinstance(a, Container)
-        elif key == Any:
-            return True
         elif key == type(None) or key == None:
             return a is None
         elif a is None:

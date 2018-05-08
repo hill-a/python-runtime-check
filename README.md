@@ -53,11 +53,17 @@ Here, we would prefere `proba` to be of type float, but also bound between [0, 1
 
 ## Installation
 
+This library will require NumPy:
+```bash
+pip install numpy
+```
+
 You can install this using:
 ```bash
 pip install -e .
 ```
-in the root directory of the repository.
+in the root directory of the repository.  
+
 
 ## Usage
 ### Type checking

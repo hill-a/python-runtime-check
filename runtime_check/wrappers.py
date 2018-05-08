@@ -69,7 +69,7 @@ def check_bound_at_run(func):
         bound = sig.bind(*args, **kwargs)
         for name, val in bound.arguments.items():
             if name in ann:
-                if isinstance(ann[name], Iterable):
+                if isinstance(ann[name], list):
                     valid = any([BoundChecker._in_bounds(val, key) for key in ann[name]])
                 else:
                     valid = BoundChecker._in_bounds(val, ann[name])
@@ -77,10 +77,10 @@ def check_bound_at_run(func):
 
         return_val = func(*args, **kwargs)
         if 'return' in ann:
-            if isinstance(ann['return'], Iterable):
+            if isinstance(ann['return'], list):
                 valid = any([BoundChecker._in_bounds(return_val, key) for key in ann['return']])
             else:
-                valid = BoundChecker(return_val, ann['return'])
+                valid = BoundChecker._in_bounds(return_val, ann['return'])
             assert valid, "Number out of bounds {}, expected bounds {}".format(return_val, ann['return'])
         return return_val
 
