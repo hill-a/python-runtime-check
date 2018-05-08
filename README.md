@@ -1,5 +1,7 @@
 # python-runtime-check
 
+[![Build Status](https://travis-ci.org/hill-a/python-runtime-check.svg?branch=master)](https://travis-ci.org/hill-a/python-runtime-check)
+
 ## Information
 ### Disclosure
 
@@ -53,7 +55,7 @@ Here, we would prefere `proba` to be of type float, but also bound between [0, 1
 
 ## Installation
 
-This library will require NumPy:
+This library will require NumPy and python 3.5 or higher:
 ```bash
 pip install numpy
 ```
