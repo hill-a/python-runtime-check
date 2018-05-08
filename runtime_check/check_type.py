@@ -1,4 +1,4 @@
-from typing import List, Union, Dict, Tuple, Any, Set, TypeVar, Callable, Mapping, Iterator
+from typing import List, Union, Dict, Tuple, Any, Set, TypeVar, Callable, Mapping, Iterator, Iterable
 
 import numpy as np
 
