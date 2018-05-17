@@ -397,7 +397,7 @@ def test_enforced_complex():
     """
 
     @enforce_annotations
-    def _check_complex(val_a: [BoundChecker[(0, 1)], TypeChecker[int, float]])
+    def _check_complex(val_a: [BoundChecker[(0, 1)], TypeChecker[int, float]])\
                         -> [BoundChecker[(0, 1, (False, True))], TypeChecker[float]]:
         return 0.2 * val_a
 

@@ -64,8 +64,8 @@ class _BoundCheckerMeta(type):
 
         return check
 
-    def __getitem__(cls, key):
-        return cls._validater(key)
+    def __getitem__(mcs, key):
+        return mcs._validater(key)
 
 
 class BoundChecker(object, metaclass=_BoundCheckerMeta):

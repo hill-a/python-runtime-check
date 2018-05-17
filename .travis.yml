@@ -17,5 +17,6 @@ install:
   - pip install mypy
 
 script:
-  - ./run_test.sh
+  - coverage run -m pytest test.py
+  - ./report_coverage.sh
   - mypy --ignore-missing-import runtime_check

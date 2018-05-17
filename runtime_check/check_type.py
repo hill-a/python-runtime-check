@@ -84,15 +84,15 @@ class _TypeCheckerMeta(type):
 
             :param val: (Any)
             """
-            if not cls._check_type(key, val):
+            if not mcs._check_type(key, val):
                 raise TypeError("Expected {}, got {}".format(key, val.__class__))
         return check
 
     def __getitem__(mcs, key):
         if isinstance(key, (Tuple, List, Set)):
-            return cls._validater(Union[tuple(key)])
+            return mcs._validater(Union[tuple(key)])
         else:
-            return cls._validater(key)
+            return mcs._validater(key)
 
 
 class TypeChecker(object, metaclass=_TypeCheckerMeta):
