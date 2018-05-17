@@ -33,6 +33,7 @@ install:
   - "%PYTHON%/python.exe C:/get-pip.py"
   - "%PYTHON%/Scripts/pip.exe install numpy"
   - "%PYTHON%/Scripts/pip.exe install coverage"
+  - "%PYTHON%/Scripts/pip.exe install pytest"
 test_script:
   - "%PYTHON%/Scripts/pip.exe --version"
   - "%PYTHON%/Scripts/coverage run -m pytest test.py"
