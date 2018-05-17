@@ -20,7 +20,7 @@ class _BoundCheckerMeta(type):
         Checks whether a value in within specific bounds.
 
         :param val: (int, float)
-        :param key: (tuples) (Lower_bound, Upper_bound, (Include_lower_bound, Include_upper_bound)) 
+        :param key: (tuples) (Lower_bound, Upper_bound, (Include_lower_bound, Include_upper_bound))
                              or (Lower_bound, Upper_bound)
         :return: (bool) is in bounds
         """

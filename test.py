@@ -16,10 +16,10 @@ def test_type_decorator_union():
     test type decorator union
     """
     @check_type_at_run
-    def _check_union(a: Union[int, float]):
-        return a + 100
+    def _check_union(val_a: Union[int, float]):
+        return val_a + 100
 
-    for val in ["", [1,2,""], (1,"",[]), {"a":1, 2:'b'}]:
+    for val in ["", [1, 2, ""], (1, "", []), {"a": 1, 2: 'b'}]:
         # these should fail
         try:
             print(val)
@@ -39,8 +39,8 @@ def test_type_decorator_simple():
     test type decorator simple
     """
     @check_type_at_run
-    def _check_int(a: int):
-        return str(a + 10)
+    def _check_int(val_a: int):
+        return str(val_a + 10)
 
     for val in ["", 0.0, [1, 2, ""], (1, "", []), {"a": 1, 2: 'b'}]:
         # these should fail
@@ -61,13 +61,13 @@ def test_type_decorator_complex():
     test type decorator complex
     """
     @check_type_at_run
-    def _check_complex(a, b: str, c: Optional[List[Any]] = None) -> Union[int, str]:
-        if c is not None:
-            return b
+    def _check_complex(val_a, val_b: str, val_c: Optional[List[Any]] = None) -> Union[int, str]:
+        if val_c is not None:
+            return val_b
         else:
-            return a
+            return val_a
 
-    for val in [(0,0), (0,"",(1,)), (0,0,None), ([], ""), (0.0, "")]:
+    for val in [(0, 0), (0, "", (1,)), (0, 0, None), ([], ""), (0.0, "")]:
         # these should fail
         try:
             print(val)
@@ -77,14 +77,14 @@ def test_type_decorator_complex():
             pass
 
     print()
-    for val in [(0,""), (0,"",None), (0,"",None), ([["a"], (1,)], "", [["a"], (1,)])]:
+    for val in [(0, ""), (0, "", None), (0, "", None), ([["a"], (1,)], "", [["a"], (1,)])]:
         print(val)
         _check_complex(*val)
 
 
 
 def test_type_union():
-    for val in ["", [1,2,""], (1,"",[]), {"a":1, 2:'b'}]:
+    for val in ["", [1, 2, ""], (1, "", []), {"a": 1, 2: 'b'}]:
         # these should fail
         try:
             print(val)
@@ -114,7 +114,7 @@ def test_type_tuple():
         TypeChecker[Tuple[int, float, str]](val)
 
 def test_type_dict():
-    for val in [0, 0.0, [], "", (0,), {"hi":"bob"}, {"hi":0.0}, {0:0}, {"hi":0, 1:"world"}, {"hi":0, None:0}, {"hi":0, "world":None}]:
+    for val in [0, 0.0, [], "", (0,), {"hi": "bob"}, {"hi": 0.0}, {0: 0}, {"hi": 0, 1: "world"}, {"hi": 0, None: 0}, {"hi": 0, "world": None}]:
         # these should fail
         try:
             print(val)
@@ -124,7 +124,7 @@ def test_type_dict():
             pass
 
     print()
-    for val in [{}, {"str":0}, {"hello":0, "world":1}]:
+    for val in [{}, {"str": 0}, {"hello": 0, "world": 1}]:
         print(val)
         TypeChecker[Optional[Dict[str, int]]](val)
 
@@ -145,16 +145,16 @@ def test_type_array():
 
 
 def test_bounds_decorator_discontinuous():
-     # a must be between ]-inf, 1] or [0, 1] or [2, +inf[
+     # val_a must be between ]-inf, 1] or [0, 1] or [2, +inf[
     @check_bound_at_run
-    def check_discontinuous(a: [(float('-inf'), -1), (0, 1), (2, float('+inf'))]):
-        return a + 0.1
+    def _check_discontinuous(val_a: [(float('-inf'), -1), (0, 1), (2, float('+inf'))]):
+        return val_a + 0.1
 
     for val in [-0.5, 1.5, "", (1,), None, [], {}, float("nan")]:
         # these should fail
         try:
             print(val)
-            check_discontinuous(val)
+            _check_discontinuous(val)
             raise EnvironmentError("Error: {} should not be valid".format(val))
         except TypeError:
             pass
@@ -164,19 +164,19 @@ def test_bounds_decorator_discontinuous():
     print()
     for val in [-1000, -100.0, -1, 0.0, 0.5, 1.0, 2, 20000]:
         print(val)
-        check_discontinuous(val)
+        _check_discontinuous(val)
 
 def test_bounds_decorator_simple():
-     # a must be between [0,1]
+     # val_a must be between [0,1]
     @check_bound_at_run
-    def check_simple(a: (0, 1)):
-        return a + 0
+    def _check_simple(val_a: (0, 1)):
+        return val_a + 0
 
     for val in [-10, 1000, -100.0, 1000.2, "", (1,), None, [], {}, float("nan")]:
         # these should fail
         try:
             print(val)
-            check_simple(val)
+            _check_simple(val)
             raise EnvironmentError("Error: {} should not be valid".format(val))
         except TypeError:
             pass
@@ -186,20 +186,20 @@ def test_bounds_decorator_simple():
     print()
     for val in [0, 0.0, 0.5, 1, 1.0]:
         print(val)
-        check_simple(val)
+        _check_simple(val)
 
 
 def test_bounds_decorator_return():
      # return must be between [0,1]
     @check_bound_at_run
-    def check_return(a) -> (0,1):
-        return a
+    def _check_return(val_a) -> (0,1):
+        return val_a
 
     for val in [-10, 1000, -100.0, 1000.2, "", (1,), None, [], {}, float("nan")]:
         # these should fail
         try:
             print(val)
-            check_return(val)
+            _check_return(val)
             raise EnvironmentError("Error: {} should not be valid".format(val))
         except TypeError:
             pass
@@ -209,24 +209,24 @@ def test_bounds_decorator_return():
     print()
     for val in [0, 0.0, 0.5, 1, 1.0]:
         print(val)
-        check_return(val)
+        _check_return(val)
 
 def test_bounds_decorator_complex():
-     # a must be between ]0, +inf[
-     # b must be between [0, 1]
+     # val_a must be between ]0, +inf[
+     # val_b must be between [0, 1]
      # return must be between [0, 100]
     @check_bound_at_run
-    def check_complex(a: (0, float('+inf'), (False, True)), b: (0, 1)) -> (0, 100):
-        if a < (b * 100):
-            return b * 100
+    def _check_complex(val_a: (0, float('+inf'), (False, True)), val_b: (0, 1)) -> (0, 100):
+        if val_a < (val_b * 100):
+            return val_b * 100
         else:
-            return min(a, 100)
+            return min(val_a, 100)
 
-    for val in [(0.0, 0), (0,0), (-10,0), (100, 1.000001), (10, -0.0001), ("",""), ((1,),(1,)), (None, None), ([], []), ({},{})]:
+    for val in [(0.0, 0), (0, 0), (-10, 0), (100, 1.000001), (10, -0.0001), ("", ""), ((1,), (1,)), (None, None), ([], []), ({}, {})]:
         # these should fail
         try:
             print(val)
-            check_complex(*val)
+            _check_complex(*val)
             raise EnvironmentError("Error: {} should not be valid".format(val))
         except TypeError:
             pass
@@ -236,7 +236,7 @@ def test_bounds_decorator_complex():
     print()
     for val in [(0.00001, 0), (1000, 1), (0.5, 0.5)]:
         print(val)
-        check_complex(*val)
+        _check_complex(*val)
 
 def test_bounds_discontinuous():
      # [0, 1] or [2, 4]
@@ -298,14 +298,14 @@ def test_bounds_positive():
 
 def test_enforced_dual():
     @enforce_annotations
-    def check_dual(a: [BoundChecker[(0, 1)], TypeChecker[int, float]]):
-        return a + 0
+    def _check_dual(val_a: [BoundChecker[(0, 1)], TypeChecker[int, float]]):
+        return val_a + 0
 
     for val in [-10000, -1, -1.0, 1.001, 10, 100000, "", (1,), None, [], {}, float("nan")]:
         # these should fail
         try:
             print(val)
-            check_dual(val)
+            _check_dual(val)
             raise EnvironmentError("Error: {} should not be valid".format(val))
         except TypeError:
             pass
@@ -315,18 +315,18 @@ def test_enforced_dual():
     print()
     for val in [0, 0.0, 0.5, 1.0, 1]:
         print(val)
-        check_dual(val)
+        _check_dual(val)
 
 def test_enforced_simple():
     @enforce_annotations
-    def check_simple(a: TypeChecker[str]):
-        return a + ""
+    def _check_simple(val_a: TypeChecker[str]):
+        return val_a + ""
 
     for val in [0, 0.0, (1,), None, [], {}, float("nan")]:
         # these should fail
         try:
             print(val)
-            check_simple(val)
+            _check_simple(val)
             raise EnvironmentError("Error: {} should not be valid".format(val))
         except TypeError:
             pass
@@ -334,18 +334,18 @@ def test_enforced_simple():
     print()
     for val in ["hello", 'world']:
         print(val)
-        check_simple(val)
+        _check_simple(val)
 
 def test_enforced_complex():
     @enforce_annotations
-    def check_complex(a: [BoundChecker[(0, 1)], TypeChecker[int, float]]) -> [BoundChecker[(0, 1, (False, True))], TypeChecker[float]]:
-        return 0.2 * a
+    def _check_complex(val_a: [BoundChecker[(0, 1)], TypeChecker[int, float]]) -> [BoundChecker[(0, 1, (False, True))], TypeChecker[float]]:
+        return 0.2 * val_a
 
     for val in [-10000, -1, -1.0, 1.001, 10, 100000, 0, "", (1,), None, [], {}, float("nan")]:
         # these should fail
         try:
             print(val)
-            check_complex(val)
+            _check_complex(val)
             raise EnvironmentError("Error: {} should not be valid".format(val))
         except TypeError:
             pass
@@ -355,7 +355,7 @@ def test_enforced_complex():
     print()
     for val in [0.000001, 0.5, 1.0, 1]:
         print(val)
-        check_complex(val)
+        _check_complex(val)
 
 
 def test_check_bounds_coverage():
@@ -366,7 +366,7 @@ def test_check_bounds_coverage():
     BoundChecker.probability(0.5)
 
     try:
-        BoundChecker[(0,1,0)](0.5)
+        BoundChecker[(0, 1, 0)](0.5)
     except ValueError:
         pass
 
@@ -385,16 +385,16 @@ def test_check_type_coverage():
 
 def test_check_wrapper_coverage():
     @enforce_annotations
-    def enforce_simple_return(a) -> TypeChecker[str]:
-        return a
+    def _enforce_simple_return(val_a) -> TypeChecker[str]:
+        return val_a
 
-    enforce_simple_return("")
+    _enforce_simple_return("")
 
     @check_bound_at_run
-    def check_discontinuous_return(a: (0, float('+inf'), (False, True)), b: (0, 1)) -> [(0, 100), (200, 300)]:
-        if a < (b * 100):
-            return b * 100
+    def _check_discontinuous_return(val_a: (0, float('+inf'), (False, True)), val_b: (0, 1)) -> [(0, 100), (200, 300)]:
+        if val_a < (val_b * 100):
+            return val_b * 100
         else:
-            return min(a, 100)
+            return min(val_a, 100)
 
-    check_discontinuous_return(100, 0.5)
+    _check_discontinuous_return(100, 0.5)

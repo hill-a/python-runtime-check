@@ -71,7 +71,7 @@ class _TypeCheckerMeta(type):
                 raise ex
 
     @classmethod
-    def _validater(cls, key):
+    def _validater(mcs, key):
         """
         Returns a checking function that checks that a value in allowed by key.
 
@@ -88,7 +88,7 @@ class _TypeCheckerMeta(type):
                 raise TypeError("Expected {}, got {}".format(key, val.__class__))
         return check
 
-    def __getitem__(cls, key):
+    def __getitem__(mcs, key):
         if isinstance(key, (Tuple, List, Set)):
             return cls._validater(Union[tuple(key)])
         else:
