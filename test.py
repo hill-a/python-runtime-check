@@ -1,3 +1,6 @@
+"""
+Test code
+"""
 from typing import Union, Any, Optional, List, Dict, Tuple, TypeVar, Set, Callable, Iterator, Mapping
 
 import numpy
@@ -9,15 +12,18 @@ runtime_check.check_type.DEEP = True
 
 
 def test_type_decorator_union():
+    """
+    test type decorator union
+    """
     @check_type_at_run
-    def check_union(a: Union[int, float]):
+    def _check_union(a: Union[int, float]):
         return a + 100
 
     for val in ["", [1,2,""], (1,"",[]), {"a":1, 2:'b'}]:
         # these should fail
         try:
             print(val)
-            check_union(val)
+            _check_union(val)
             raise EnvironmentError("Error: {} should not be valid".format(val))
         except TypeError:
             pass
@@ -25,19 +31,22 @@ def test_type_decorator_union():
     print()
     for val in [0.0, 0, 1e10, -100, -1.0, 10, 1.0]:
         print(val)
-        check_union(val)
+        _check_union(val)
 
 
 def test_type_decorator_simple():
+    """
+    test type decorator simple
+    """
     @check_type_at_run
-    def check_int(a: int):
+    def _check_int(a: int):
         return str(a + 10)
 
-    for val in ["", 0.0, [1,2,""], (1,"",[]), {"a":1, 2:'b'}]:
+    for val in ["", 0.0, [1, 2, ""], (1, "", []), {"a": 1, 2: 'b'}]:
         # these should fail
         try:
             print(val)
-            check_int(val)
+            _check_int(val)
             raise EnvironmentError("Error: {} should not be valid".format(val))
         except TypeError:
             pass
@@ -45,11 +54,14 @@ def test_type_decorator_simple():
     print()
     for val in [0, int(1e10), -100, 10]:
         print(val)
-        check_int(val)
+        _check_int(val)
 
 def test_type_decorator_complex():
+    """
+    test type decorator complex
+    """
     @check_type_at_run
-    def check_complex(a, b: str, c: Optional[List[Any]] = None) -> Union[int, str]:
+    def _check_complex(a, b: str, c: Optional[List[Any]] = None) -> Union[int, str]:
         if c is not None:
             return b
         else:
@@ -59,7 +71,7 @@ def test_type_decorator_complex():
         # these should fail
         try:
             print(val)
-            check_complex(*val)
+            _check_complex(*val)
             raise EnvironmentError("Error: {} should not be valid".format(val))
         except TypeError:
             pass
@@ -67,7 +79,7 @@ def test_type_decorator_complex():
     print()
     for val in [(0,""), (0,"",None), (0,"",None), ([["a"], (1,)], "", [["a"], (1,)])]:
         print(val)
-        check_complex(*val)
+        _check_complex(*val)
 
 
 

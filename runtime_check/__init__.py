@@ -1,3 +1,10 @@
+"""
+runtime_check
+
+This library allows the checking of:
+- specific carateristics of a function on pre and post execution.
+- specific variables at call.
+"""
 # inspired blackmagic https://www.youtube.com/watch?v=Je8TcRQcUgA
 # python 3 only type and bound checking
 

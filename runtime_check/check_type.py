@@ -1,3 +1,7 @@
+"""
+This module is used for type checking
+"""
+
 from typing import List, Union, Dict, Tuple, Any, Set, TypeVar, Callable, Mapping, Iterator, Iterable
 
 import numpy as np
@@ -5,61 +9,83 @@ import numpy as np
 DEEP = False
 
 class _TypeCheckerMeta(type):
+    """
+    Meta class used for the TypeChecker[] notation, also contains the checking code.
+    """
+
     @classmethod
-    def _check_type(mcs, key, a): #TODO: add the remainding typing objects (generator, ...)
+    def _check_type(mcs, key, val): #TODO: add the remainding typing objects (generator, ...)
+        """
+        Checks whether a value is of a specific type.
+
+        :param val: (Any)
+        :param key: (Type or Typing object)
+        :return: (bool) is of type
+        """
         if key == Any:
             return True
         elif type(key) == type(Union):
-            return any([mcs._check_type(k, a) for k in key.__args__])
+            return any([mcs._check_type(k, val) for k in key.__args__])
         elif isinstance(key, TypeVar):
-            return any([mcs._check_type(k, a) for k in key.__constraints__])
+            return any([mcs._check_type(k, val) for k in key.__constraints__])
         elif issubclass(key, List):
-            valid = isinstance(a, List)
+            valid = isinstance(val, List)
             if DEEP and valid and key.__args__ is not None:
-                return all([mcs._check_type(key.__args__[0], val) for val in a])
+                return all([mcs._check_type(key.__args__[0], v) for v in val])
             else:
                 return valid
         elif issubclass(key, Set):
-            valid = isinstance(a, Set)
+            valid = isinstance(val, Set)
             if DEEP and valid and key.__args__ is not None:
-                return all([mcs._check_type(key.__args__[0], val) for val in a])
+                return all([mcs._check_type(key.__args__[0], v) for v in val])
             else:
                 return valid
         elif issubclass(key, Dict):
-            valid = isinstance(a, Dict)
+            valid = isinstance(val, Dict)
             if DEEP and valid and key.__args__ is not None:
                 return all([mcs._check_type(key.__args__[0], k) and
-                            mcs._check_type(key.__args__[1], val) for (k, val) in a.items()])
+                            mcs._check_type(key.__args__[1], v) for (k, v) in val.items()])
             else:
                 return valid
         elif issubclass(key, Tuple):
-            valid = isinstance(a, Tuple) and (key.__args__ is None or len(key.__args__) == len(a))
+            valid = isinstance(val, Tuple) and (key.__args__ is None or len(key.__args__) == len(val))
             if DEEP and valid and  key.__args__ is not None:
-                return all([mcs._check_type(k, val) for k, val in zip(key.__args__, a)])
+                return all([mcs._check_type(k, v) for k, v in zip(key.__args__, val)])
             else:
                 return valid
         elif type(key) == type(Callable): # will not do in depth checking, only shallow.
-            return callable(a)
+            return callable(val)
         elif issubclass(key, Mapping): # will not do in depth checking, only shallow.
-            return isinstance(a, map)
+            return isinstance(val, map)
         elif issubclass(key, Iterator): # will not do in depth checking, only shallow.
-            return isinstance(a, Iterator)
+            return isinstance(val, Iterator)
         elif key == type(None) or key == None:
-            return a is None
-        elif a is None:
+            return val is None
+        elif val is None:
             return False
         else:
             try:
-                return isinstance(a, key)
-            except Exception as e: # pragma: no cover
-                print("Error: occured when comparing {} to class {}".format(a, key))
-                raise e
+                return isinstance(val, key)
+            except Exception as ex: # pragma: no cover
+                print("Error: occured when comparing {} to class {}".format(val, key))
+                raise ex
 
     @classmethod
     def _validater(cls, key):
-        def check(a):
-            if not cls._check_type(key, a):
-                raise TypeError("Expected {}, got {}".format(key, a.__class__))
+        """
+        Returns a checking function that checks that a value in allowed by key.
+
+        :param key: (Type or Typing object)
+        :retrun: (callable) function that takes value and will raise an error if not valid
+        """
+        def check(val):
+            """
+            Checks that val is valid, will raise an error if not valid.
+
+            :param val: (Any)
+            """
+            if not cls._check_type(key, val):
+                raise TypeError("Expected {}, got {}".format(key, val.__class__))
         return check
 
     def __getitem__(cls, key):
@@ -71,20 +97,33 @@ class _TypeCheckerMeta(type):
 
 class TypeChecker(object, metaclass=_TypeCheckerMeta):
     """
-    TypeChecker[int, float](0)
-    TypeChecker.array(numpy.arange(10))
+    Class used to check whether a value is of a specific type.
+
+    ex:
+        TypeChecker[int, float](0)
+        TypeChecker.array(numpy.arange(10))
 
     you may use typing.Union[int, float] for mutliple valid types
     or List[int], Dict[str, int], Optional[int].
     """
-    @classmethod
-    def scalar(cls, a):
-        cls._validater(Union[int, float])(a)
 
     @classmethod
-    def numpy_array(cls, a):
-        cls._validater(np.ndarray)(a)
+    def scalar(cls, val):
+        """
+        Checks whether val is a number.
+        """
+        cls._validater(Union[int, float])(val)
 
     @classmethod
-    def iterable(cls, a):
-        cls._validater(Union[np.ndarray, Iterable])(a)
+    def numpy_array(cls, val):
+        """
+        Checks whether val is a numpy array.
+        """
+        cls._validater(np.ndarray)(val)
+
+    @classmethod
+    def iterable(cls, val):
+        """
+        Checks whether val is an Iterable.
+        """
+        cls._validater(Union[np.ndarray, Iterable])(val)
