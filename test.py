@@ -48,13 +48,13 @@ def test_type_decorator_simple():
 
 def test_type_decorator_complex():
     @check_type_at_run
-    def check_complex(a, b: str, c: Optional[List[Any]] = []) -> Union[int, str]:
-        if c is None:
+    def check_complex(a, b: str, c: Optional[List[Any]] = None) -> Union[int, str]:
+        if c is not None:
             return b
-        else: 
+        else:
             return a
 
-    for val in [(0,0), (0,"",(1,)), (0,0,[]), ([], ""), (0.0, "")]:
+    for val in [(0,0), (0,"",(1,)), (0,0,None), ([], ""), (0.0, "")]:
         # these should fail
         try:
             print(val)
@@ -64,7 +64,7 @@ def test_type_decorator_complex():
             pass
 
     print()
-    for val in [(0,""), (0,"",[1]), (0,"",[["a"], (1,)]), ([["a"], (1,)], "", None)]:
+    for val in [(0,""), (0,"",None), (0,"",None), ([["a"], (1,)], "", [["a"], (1,)])]:
         print(val)
         check_complex(*val)
 
@@ -326,7 +326,7 @@ def test_enforced_simple():
 def test_enforced_complex():
     @enforce_annotations
     def check_complex(a: [BoundChecker[(0, 1)], TypeChecker[int, float]]) -> [BoundChecker[(0, 1, (False, True))], TypeChecker[float]]:
-        return 0.2 * a 
+        return 0.2 * a
 
     for val in [-10000, -1, -1.0, 1.001, 10, 100000, 0, "", (1,), None, [], {}, float("nan")]:
         # these should fail
