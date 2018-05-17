@@ -28,7 +28,7 @@ class _TypeCheckerMeta(type):
         elif issubclass(key, Dict):
             valid = isinstance(a, Dict)
             if DEEP and valid:
-                return all([mcs._check_type(key.__args__[0], k) and 
+                return all([mcs._check_type(key.__args__[0], k) and
                             mcs._check_type(key.__args__[1], val) for (k, val) in a.items()])
             else:
                 return valid
@@ -51,13 +51,15 @@ class _TypeCheckerMeta(type):
         else:
             try:
                 return isinstance(a, key)
-            except:
+            except Exception as e:
                 print("Error: occured when comparing {} to class {}".format(a, key))
+                raise e
 
     @classmethod
     def _validater(cls, key):
         def check(a):
-            assert cls._check_type(key, a), "Expected {}, got {}".format(key, a.__class__)
+            if not cls._check_type(key, a):
+                raise TypeError("Expected {}, got {}".format(key, a.__class__))
         return check
 
     def __getitem__(cls, key):
@@ -67,7 +69,7 @@ class _TypeCheckerMeta(type):
             return cls._validater(key)
 
 
-class TypeChecker(object, metaclass=_TypeCheckerMeta): 
+class TypeChecker(object, metaclass=_TypeCheckerMeta):
     """
     TypeChecker[int, float](0)
     TypeChecker.array(numpy.arange(10))
@@ -84,5 +86,5 @@ class TypeChecker(object, metaclass=_TypeCheckerMeta):
         cls._validater(np.ndarray)(a)
 
     @classmethod
-    def array(cls, a):
+    def iterable(cls, a):
         cls._validater(Union[np.ndarray, Iterable])(a)

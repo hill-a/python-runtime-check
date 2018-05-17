@@ -98,7 +98,8 @@ TypeChecker[int, float](0) # here the comma seperated types are replaced with ty
 TypeChecker[Tuple[int, float, str]]((0, 1.0, 'a'))
 TypeChecker[Optional[Dict[str, int]]](None)
 TypeChecker[Optional[Dict[str, int]]]({'a':1, 'b':2})
-TypeChecker.array(numpy.arange(10))
+TypeChecker.iterable("hello")
+TypeChecker.numpy_array(numpy.arange(10))
 ```  
 
 Should you need to check all the elements of a list, dict, set, tuple or sequence when type checking, 

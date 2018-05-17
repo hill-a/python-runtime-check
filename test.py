@@ -17,8 +17,8 @@ def test_type_decorator_union():
         try:
             print(val)
             check_union(val)
-            assert False, "Error: {} should not be valid".format(val)
-        except AssertionError:
+            raise EnvironmentError("Error: {} should not be valid".format(val))
+        except TypeError:
             pass
 
     print()
@@ -37,8 +37,8 @@ def test_type_decorator_simple():
         try:
             print(val)
             check_int(val)
-            assert False, "Error: {} should not be valid".format(val)
-        except AssertionError:
+            raise EnvironmentError("Error: {} should not be valid".format(val))
+        except TypeError:
             pass
 
     print()
@@ -59,8 +59,8 @@ def test_type_decorator_complex():
         try:
             print(val)
             check_complex(*val)
-            assert False, "Error: {} should not be valid".format(val)
-        except AssertionError:
+            raise EnvironmentError("Error: {} should not be valid".format(val))
+        except TypeError:
             pass
 
     print()
@@ -76,8 +76,8 @@ def test_type_union():
         try:
             print(val)
             TypeChecker[int, float](val)
-            assert False, "Error: {} should not be valid".format(val)
-        except AssertionError:
+            raise EnvironmentError("Error: {} should not be valid".format(val))
+        except TypeError:
             pass
 
     print()
@@ -91,8 +91,8 @@ def test_type_tuple():
         try:
             print(val)
             TypeChecker[Tuple[int, float, str]](val)
-            assert False, "Error: {} should not be valid".format(val)
-        except AssertionError:
+            raise EnvironmentError("Error: {} should not be valid".format(val))
+        except TypeError:
             pass
 
     print()
@@ -106,8 +106,8 @@ def test_type_dict():
         try:
             print(val)
             TypeChecker[Optional[Dict[str, int]]](val)
-            assert False, "Error: {} should not be valid".format(val)
-        except AssertionError:
+            raise EnvironmentError("Error: {} should not be valid".format(val))
+        except TypeError:
             pass
 
     print()
@@ -116,19 +116,19 @@ def test_type_dict():
         TypeChecker[Optional[Dict[str, int]]](val)
 
 def test_type_array():
-    for val in [0, 0.0, "", (0,), {}, float("nan")]:
+    for val in [0, 0.0, float("nan")]:
         # these should fail
         try:
             print(val)
-            TypeChecker.array(val)
-            assert False, "Error: {} should not be valid".format(val)
-        except AssertionError:
+            TypeChecker.iterable(val)
+            raise EnvironmentError("Error: {} should not be valid".format(val))
+        except TypeError:
             pass
 
     print()
     for val in [[], ["hello", 0, (1,), [], {}], list(range(1000)), numpy.arange(1000)]:
         print(val)
-        TypeChecker.array(val)
+        TypeChecker.iterable(val)
 
 
 def test_bounds_decorator_discontinuous():
@@ -137,17 +137,19 @@ def test_bounds_decorator_discontinuous():
     def check_discontinuous(a: [(float('-inf'), -1), (0, 1), (2, float('+inf'))]):
         return a + 0.1
 
-    for val in [-0.5, 0.5, "", (1,), None, [], {}, float("nan")]:
+    for val in [-0.5, 1.5, "", (1,), None, [], {}, float("nan")]:
         # these should fail
         try:
             print(val)
             check_discontinuous(val)
-            assert False, "Error: {} should not be valid".format(val)
-        except AssertionError:
+            raise EnvironmentError("Error: {} should not be valid".format(val))
+        except TypeError:
+            pass
+        except ValueError:
             pass
 
     print()
-    for val in [-1000, -100.0, -1, 0.0, 1.0, 2, 20000]:
+    for val in [-1000, -100.0, -1, 0.0, 0.5, 1.0, 2, 20000]:
         print(val)
         check_discontinuous(val)
 
@@ -162,8 +164,10 @@ def test_bounds_decorator_simple():
         try:
             print(val)
             check_simple(val)
-            assert False, "Error: {} should not be valid".format(val)
-        except AssertionError:
+            raise EnvironmentError("Error: {} should not be valid".format(val))
+        except TypeError:
+            pass
+        except ValueError:
             pass
 
     print()
@@ -183,8 +187,10 @@ def test_bounds_decorator_return():
         try:
             print(val)
             check_return(val)
-            assert False, "Error: {} should not be valid".format(val)
-        except AssertionError:
+            raise EnvironmentError("Error: {} should not be valid".format(val))
+        except TypeError:
+            pass
+        except ValueError:
             pass
 
     print()
@@ -208,8 +214,10 @@ def test_bounds_decorator_complex():
         try:
             print(val)
             check_complex(*val)
-            assert False, "Error: {} should not be valid".format(val)
-        except AssertionError:
+            raise EnvironmentError("Error: {} should not be valid".format(val))
+        except TypeError:
+            pass
+        except ValueError:
             pass
 
     print()
@@ -225,8 +233,10 @@ def test_bounds_discontinuous():
         try:
             print(val)
             BoundChecker[(0, 1), (2, 4)](val)
-            assert False, "Error: {} should not be valid".format(val)
-        except AssertionError:
+            raise EnvironmentError("Error: {} should not be valid".format(val))
+        except TypeError:
+            pass
+        except ValueError:
             pass
 
     print()
@@ -242,8 +252,10 @@ def test_bounds_simple():
         try:
             print(val)
             BoundChecker[(0, 100, (True, False))](val)
-            assert False, "Error: {} should not be valid".format(val)
-        except AssertionError:
+            raise EnvironmentError("Error: {} should not be valid".format(val))
+        except TypeError:
+            pass
+        except ValueError:
             pass
 
     print()
@@ -259,8 +271,10 @@ def test_bounds_positive():
         try:
             print(val)
             BoundChecker.positive(val)
-            assert False, "Error: {} should not be valid".format(val)
-        except AssertionError:
+            raise EnvironmentError("Error: {} should not be valid".format(val))
+        except TypeError:
+            pass
+        except ValueError:
             pass
 
     print()
@@ -279,8 +293,10 @@ def test_enforced_dual():
         try:
             print(val)
             check_dual(val)
-            assert False, "Error: {} should not be valid".format(val)
-        except AssertionError:
+            raise EnvironmentError("Error: {} should not be valid".format(val))
+        except TypeError:
+            pass
+        except ValueError:
             pass
 
     print()
@@ -298,8 +314,8 @@ def test_enforced_simple():
         try:
             print(val)
             check_simple(val)
-            assert False, "Error: {} should not be valid".format(val)
-        except AssertionError:
+            raise EnvironmentError("Error: {} should not be valid".format(val))
+        except TypeError:
             pass
 
     print()
@@ -317,8 +333,10 @@ def test_enforced_complex():
         try:
             print(val)
             check_complex(val)
-            assert False, "Error: {} should not be valid".format(val)
-        except AssertionError:
+            raise EnvironmentError("Error: {} should not be valid".format(val))
+        except TypeError:
+            pass
+        except ValueError:
             pass
 
     print()

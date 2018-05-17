@@ -21,8 +21,8 @@ class _BoundCheckerMeta(type):
             return (operator.le if key[2][0] else operator.lt)(key[0], a) and \
                    (operator.le if key[2][1] else operator.lt)(a, key[1])
         else:
-            assert False, "The bound tuple can be of structure: (Lower_bound, Upper_bound, (Include_lower_bound, " + \
-                          "Include_upper_bound)) or (Lower_bound, Upper_bound)"
+            raise ValueError("The bound tuple can be of structure: (Lower_bound, Upper_bound, (Include_lower_bound, " +
+                          "Include_upper_bound)) or (Lower_bound, Upper_bound)")
 
     @classmethod
     def _validater(mcs, key):
@@ -31,7 +31,8 @@ class _BoundCheckerMeta(type):
                 valid = any([mcs._in_bounds(a, k) for k in key])
             else:
                 valid = mcs._in_bounds(a, key)
-            assert valid, "Number out of bounds {}, expected bounds {}".format(a, key)
+            if not valid:
+                raise ValueError("Number out of bounds {}, expected bounds {}".format(a, key))
 
         return check
 

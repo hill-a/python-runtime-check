@@ -25,14 +25,16 @@ def enforce_annotations(func):
         for name, val in bound.arguments.items():
             if name in ann:
                 if isinstance(ann[name], Iterable):
-                    [t(val) for t in ann[name]]
+                    for t in ann[name]:
+                        t(val)
                 else:
                     ann[name](val)
 
         return_val = func(*args, **kwargs)
         if 'return' in ann:
             if isinstance(ann['return'], Iterable):
-                [t(return_val) for t in ann['return']]
+                for t in ann['return']:
+                    t(return_val)
             else:
                 ann['return'](return_val)
         return return_val
@@ -73,7 +75,8 @@ def check_bound_at_run(func):
                     valid = any([BoundChecker._in_bounds(val, key) for key in ann[name]])
                 else:
                     valid = BoundChecker._in_bounds(val, ann[name])
-                assert valid, "Number out of bounds {}, expected bounds {}".format(val, ann[name])
+                if not valid:
+                    raise ValueError("Number out of bounds {}, expected bounds {}".format(val, ann[name]))
 
         return_val = func(*args, **kwargs)
         if 'return' in ann:
@@ -81,7 +84,8 @@ def check_bound_at_run(func):
                 valid = any([BoundChecker._in_bounds(return_val, key) for key in ann['return']])
             else:
                 valid = BoundChecker._in_bounds(return_val, ann['return'])
-            assert valid, "Number out of bounds {}, expected bounds {}".format(return_val, ann['return'])
+            if not valid:
+                raise ValueError("Number out of bounds {}, expected bounds {}".format(return_val, ann['return']))
         return return_val
 
     return wrapper
@@ -101,7 +105,7 @@ def check_type_at_run(func):
     def hello(a: int, b: str, c: Optional[List[Any]] = []) -> Union[int, str]:
         if c is None:
             return b
-        else: 
+        else:
             return a
 
     you may use typing.Union[int, float] for mutliple valid types
@@ -115,13 +119,13 @@ def check_type_at_run(func):
         bound = sig.bind(*args, **kwargs)
         for name, val in bound.arguments.items():
             if name in ann:
-                assert TypeChecker._check_type(ann[name], val), \
-                    'Expected {} for argument {}, got {}'.format(ann[name], name, val.__class__)
+                if not TypeChecker._check_type(ann[name], val):
+                    raise TypeError('Expected {} for argument {}, got {}'.format(ann[name], name, val.__class__))
 
         return_val = func(*args, **kwargs)
         if 'return' in ann:
-            assert TypeChecker._check_type(ann['return'], return_val), \
-                'Expected {} for return, got {}'.format(ann['return'], return_val.__class__)
+            if not TypeChecker._check_type(ann['return'], return_val):
+                raise TypeError('Expected {} for return, got {}'.format(ann['return'], return_val.__class__))
         return return_val
 
     return wrapper
