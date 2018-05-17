@@ -15,5 +15,5 @@ install:
   - pip install mypy
 
 script:
-  - run_test.sh
+  - ./run_test.sh
   - mypy --ignore-missing-import runtime_check
