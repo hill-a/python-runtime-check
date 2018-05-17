@@ -6,6 +6,26 @@ from runtime_check.check_bounds import BoundChecker
 from runtime_check.check_type import TypeChecker
 
 
+def _checking_annotations(func, pre_check, post_check):
+    sig = signature(func)
+    ann = func.__annotations__
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        bound = sig.bind(*args, **kwargs)
+        for name, val in bound.arguments.items():
+            if name in ann:
+                pre_check(ann[name], val, name)
+
+        return_val = func(*args, **kwargs)
+        if 'return' in ann:
+            post_check(ann['return'], return_val)
+        return return_val
+
+    return wrapper
+
+
+
 def enforce_annotations(func):
     """
     @enforce_annotations
@@ -16,30 +36,21 @@ def enforce_annotations(func):
     def hello(a: [BoundChecker[(0,1)], TypeChecker[int,float]]) -> [BoundChecker[(0,1,(False, True))], TypeChecker[float]]:
         return 0.2
     """
-    sig = signature(func)
-    ann = func.__annotations__
+    def pre_check(annotated, val, name):
+        if isinstance(annotated, Iterable):
+            for t in annotated:
+                t(val)
+        else:
+            annotated(val)
 
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        bound = sig.bind(*args, **kwargs)
-        for name, val in bound.arguments.items():
-            if name in ann:
-                if isinstance(ann[name], Iterable):
-                    for t in ann[name]:
-                        t(val)
-                else:
-                    ann[name](val)
+    def post_check(annotated, val):
+        if isinstance(annotated, Iterable):
+            for t in annotated:
+                t(val)
+        else:
+            annotated(val)
 
-        return_val = func(*args, **kwargs)
-        if 'return' in ann:
-            if isinstance(ann['return'], Iterable):
-                for t in ann['return']:
-                    t(return_val)
-            else:
-                ann['return'](return_val)
-        return return_val
-
-    return wrapper
+    return _checking_annotations(func, pre_check, post_check)
 
 
 def check_bound_at_run(func):
@@ -63,32 +74,24 @@ def check_bound_at_run(func):
         or (Lower_bound, Upper_bound)
     You may use lists of bounds to define discontinuous bounds
     """
-    sig = signature(func)
-    ann = func.__annotations__
 
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        bound = sig.bind(*args, **kwargs)
-        for name, val in bound.arguments.items():
-            if name in ann:
-                if isinstance(ann[name], list):
-                    valid = any([BoundChecker._in_bounds(val, key) for key in ann[name]])
-                else:
-                    valid = BoundChecker._in_bounds(val, ann[name])
-                if not valid:
-                    raise ValueError("Number out of bounds {}, expected bounds {}".format(val, ann[name]))
+    def pre_check(annotated, val, name):
+        if isinstance(annotated, list):
+            valid = any([BoundChecker._in_bounds(val, key) for key in annotated])
+        else:
+            valid = BoundChecker._in_bounds(val, annotated)
+        if not valid:
+            raise ValueError("Number out of bounds {}, expected bounds {}".format(val, annotated))
 
-        return_val = func(*args, **kwargs)
-        if 'return' in ann:
-            if isinstance(ann['return'], list):
-                valid = any([BoundChecker._in_bounds(return_val, key) for key in ann['return']])
-            else:
-                valid = BoundChecker._in_bounds(return_val, ann['return'])
-            if not valid:
-                raise ValueError("Number out of bounds {}, expected bounds {}".format(return_val, ann['return']))
-        return return_val
+    def post_check(annotated, val):
+        if isinstance(annotated, list):
+            valid = any([BoundChecker._in_bounds(val, key) for key in annotated])
+        else:
+            valid = BoundChecker._in_bounds(val, annotated)
+        if not valid:
+            raise ValueError("Number out of bounds {}, expected bounds {}".format(val, annotated))
 
-    return wrapper
+    return _checking_annotations(func, pre_check, post_check)
 
 
 def check_type_at_run(func):
@@ -111,21 +114,13 @@ def check_type_at_run(func):
     you may use typing.Union[int, float] for mutliple valid types
     or List[int], Dict[str, int], Optional[int].
     """
-    sig = signature(func)
-    ann = func.__annotations__
+    def pre_check(annotated, val, name):
+        if not TypeChecker._check_type(annotated, val):
+            raise TypeError('Expected {} for argument {}, got {}'.format(annotated, name, val.__class__))
 
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        bound = sig.bind(*args, **kwargs)
-        for name, val in bound.arguments.items():
-            if name in ann:
-                if not TypeChecker._check_type(ann[name], val):
-                    raise TypeError('Expected {} for argument {}, got {}'.format(ann[name], name, val.__class__))
+    def post_check(annotated, val):
+        if not TypeChecker._check_type(annotated, val):
+            raise TypeError('Expected {} for return, got {}'.format(annotated, val.__class__))
 
-        return_val = func(*args, **kwargs)
-        if 'return' in ann:
-            if not TypeChecker._check_type(ann['return'], return_val):
-                raise TypeError('Expected {} for return, got {}'.format(ann['return'], return_val.__class__))
-        return return_val
+    return _checking_annotations(func, pre_check, post_check)
 
-    return wrapper
