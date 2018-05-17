@@ -1,6 +1,6 @@
 # python-runtime-check
 
-[![Build Status](https://travis-ci.org/hill-a/python-runtime-check.svg?branch=master)](https://travis-ci.org/hill-a/python-runtime-check) [![CC-0 license](https://img.shields.io/badge/License-CC--0-blue.svg)](https://creativecommons.org/licenses/by-nd/4.0) [![Python Version](https://img.shields.io/badge/python-3.5%2C%203.6-blue.svg)](https://github.com/hill-a/python-runtime-check) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ef2f1c7118934061ada23af105812b0c)](https://www.codacy.com/app/hill-a/python-runtime-check?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=hill-a/python-runtime-check&amp;utm_campaign=Badge_Grade)
+[![Build Status](https://travis-ci.org/hill-a/python-runtime-check.svg?branch=master)](https://travis-ci.org/hill-a/python-runtime-check) [![CC-0 license](https://img.shields.io/badge/License-CC--0-blue.svg)](https://creativecommons.org/share-your-work/public-domain/cc0/) [![Python Version](https://img.shields.io/badge/python-3.5%2C%203.6-blue.svg)](https://github.com/hill-a/python-runtime-check) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ef2f1c7118934061ada23af105812b0c)](https://www.codacy.com/app/hill-a/python-runtime-check?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=hill-a/python-runtime-check&amp;utm_campaign=Badge_Grade)
 
 ## Information
 ### Disclosure
