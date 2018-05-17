@@ -15,26 +15,26 @@ class _TypeCheckerMeta(type):
             return any([mcs._check_type(k, a) for k in key.__constraints__])
         elif issubclass(key, List):
             valid = isinstance(a, List)
-            if DEEP and valid:
+            if DEEP and valid and key.__args__ is not None:
                 return all([mcs._check_type(key.__args__[0], val) for val in a])
             else:
                 return valid
         elif issubclass(key, Set):
             valid = isinstance(a, Set)
-            if DEEP and valid:
+            if DEEP and valid and key.__args__ is not None:
                 return all([mcs._check_type(key.__args__[0], val) for val in a])
             else:
                 return valid
         elif issubclass(key, Dict):
             valid = isinstance(a, Dict)
-            if DEEP and valid:
+            if DEEP and valid and key.__args__ is not None:
                 return all([mcs._check_type(key.__args__[0], k) and
                             mcs._check_type(key.__args__[1], val) for (k, val) in a.items()])
             else:
                 return valid
         elif issubclass(key, Tuple):
-            valid = isinstance(a, Tuple) and len(key.__args__) == len(a)
-            if DEEP and valid:
+            valid = isinstance(a, Tuple) and (key.__args__ is None or len(key.__args__) == len(a))
+            if DEEP and valid and  key.__args__ is not None:
                 return all([mcs._check_type(k, val) for k, val in zip(key.__args__, a)])
             else:
                 return valid
@@ -51,7 +51,7 @@ class _TypeCheckerMeta(type):
         else:
             try:
                 return isinstance(a, key)
-            except Exception as e:
+            except Exception as e: # pragma: no cover
                 print("Error: occured when comparing {} to class {}".format(a, key))
                 raise e
 

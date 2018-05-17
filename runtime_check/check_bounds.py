@@ -1,4 +1,5 @@
 import operator
+from typing import Tuple, Any
 
 import numpy as np
 
@@ -9,11 +10,11 @@ class _BoundCheckerMeta(type):
     @classmethod
     def _in_bounds(mcs, a, key):
         TypeChecker.scalar(a)
-        if len(key) == 2:
+        if isinstance(key, tuple) and len(key) == 2:
             TypeChecker.scalar(key[0])
             TypeChecker.scalar(key[1])
             return key[0] <= a <= key[1]
-        elif len(key) == 3 and len(key[2]) == 2:
+        elif isinstance(key, tuple) and len(key) == 3 and isinstance(key[2], tuple) and len(key[2]) == 2:
             TypeChecker.scalar(key[0])
             TypeChecker.scalar(key[1])
             TypeChecker[bool](key[2][0])

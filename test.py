@@ -1,6 +1,7 @@
-from typing import Union, Any, Optional, List, Dict, Tuple
+from typing import Union, Any, Optional, List, Dict, Tuple, TypeVar, Set, Callable, Iterator, Mapping
 
 import numpy
+
 import runtime_check
 from runtime_check import check_type_at_run, TypeChecker, check_bound_at_run, BoundChecker, enforce_annotations
 
@@ -343,3 +344,45 @@ def test_enforced_complex():
     for val in [0.000001, 0.5, 1.0, 1]:
         print(val)
         check_complex(val)
+
+
+def test_check_bounds_coverage():
+    BoundChecker.positive(1)
+    BoundChecker.negative(-1)
+    BoundChecker.positive_not_zero(1)
+    BoundChecker.negative_not_zero(-1)
+    BoundChecker.probability(0.5)
+
+    try:
+        BoundChecker[(0,1,0)](0.5)
+    except ValueError:
+        pass
+
+
+def test_check_type_coverage():
+    TypeChecker[TypeVar('s', int, float)](1)
+    TypeChecker[Set]({1})
+    TypeChecker[Set[int]]({1})
+
+    TypeChecker[Callable](lambda a : 1)
+    TypeChecker[Mapping](map(lambda x: x+1, [1, 2, 3]))
+    TypeChecker[Iterator]([1, 2, 3].__iter__())
+
+    TypeChecker.numpy_array(numpy.ones(10))
+
+
+def test_check_wrapper_coverage():
+    @enforce_annotations
+    def enforce_simple_return(a) -> TypeChecker[str]:
+        return a
+
+    enforce_simple_return("")
+
+    @check_bound_at_run
+    def check_discontinuous_return(a: (0, float('+inf'), (False, True)), b: (0, 1)) -> [(0, 100), (200, 300)]:
+        if a < (b * 100):
+            return b * 100
+        else:
+            return min(a, 100)
+
+    check_discontinuous_return(100, 0.5)

@@ -81,7 +81,7 @@ def check_bound_at_run(func):
         else:
             valid = BoundChecker._in_bounds(val, annotated)
         if not valid:
-            raise ValueError("Number out of bounds {}, expected bounds {}".format(val, annotated))
+            raise ValueError("Number out of bounds {} for argument {}, expected bounds {}".format(val, name, annotated))
 
     def post_check(annotated, val):
         if isinstance(annotated, list):
@@ -89,7 +89,7 @@ def check_bound_at_run(func):
         else:
             valid = BoundChecker._in_bounds(val, annotated)
         if not valid:
-            raise ValueError("Number out of bounds {}, expected bounds {}".format(val, annotated))
+            raise ValueError("Number out of bounds {} for return, expected bounds {}".format(val, annotated))
 
     return _checking_annotations(func, pre_check, post_check)
 

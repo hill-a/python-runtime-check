@@ -1,10 +1,19 @@
 language: python
+
+os:
+  - linux
+  - osx
+
 python:
   - "3.5"
   - "3.6"
 
 install:
   - pip install numpy
+  - pip install coverage
+  - pip install codacy-coverage
+  - pip install mypy
 
 script:
-  - pytest test.py
+  - run_test.sh
+  - mypy --ignore-missing-import runtime_check
