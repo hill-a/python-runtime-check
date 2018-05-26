@@ -62,10 +62,8 @@ pip install numpy
 
 You can install this using:
 ```bash
-pip install -e .
+pip install git+https://github.com/hill-a/python-runtime-check
 ```
-in the root directory of the repository.  
-
 
 ## Usage
 ### Type checking
