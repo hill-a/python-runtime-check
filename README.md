@@ -8,7 +8,7 @@
 I did not directly come up with this. This 'blackmagic' is inspired from a talk by David Beazley. It's quite fun watch if you have an hour to spare :)  
 
 Video:  
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=Je8TcRQcUgA" target="_blank"><img src="http://img.youtube.com/vi/Je8TcRQcUgA/0.jpg" alt="The 'Fun' of Reinvention by David Beazley" width="480" height="360" border="10" /></a>  
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=5nXmq1PsoJ0" target="_blank"><img src="http://img.youtube.com/vi/5nXmq1PsoJ0/0.jpg" alt="The 'Fun' of Reinvention by David Beazley" width="480" height="360" border="10" /></a>  
 
 As such, all the code in this repository is Creative Commons 0 [(CC0)](https://creativecommons.org/share-your-work/public-domain/cc0/)  
 
